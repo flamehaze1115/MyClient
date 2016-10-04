@@ -19,13 +19,16 @@ public class MainActivity extends AppCompatActivity {
 
     final static int MsgIP = 1;
     final static int MsgPort = 2;
+    final static int ReceiveNum = 3;
     private EditText editText;
     private EditText editText2;
-    public static TextView receive;
+    private TextView receive;
     public static EditText editText3;
     private Button buttonSend;
     public static boolean SendFlag = false;
-    private ServerSocket serverSocket = null;
+    private ServerSocket serverSocket =null;
+
+
 
 
     public static ArrayList<Socket> socketArrayList = new ArrayList<Socket>();
@@ -40,8 +43,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MsgPort:
                     editText2.setText(msg.obj.toString());
-
                     break;
+                case ReceiveNum:
+                    receive.append(msg.obj.toString());
             }
         }
     };
@@ -57,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
         receive = (TextView) findViewById(R.id.receive);
         buttonSend = (Button) findViewById(R.id.button);
 
+        try{
+            serverSocket = new ServerSocket(30000);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         GetIpAddress.getLocalIpAddress(serverSocket);
 
         //获取IP、Port
@@ -87,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
     Runnable networkTask = new Runnable() {
         @Override
         public void run() {
-            try {
+            /*try {
                 ServerSocket serverSocket = new ServerSocket(30000);
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
 
             while (true) {
                 Socket socket = null;
@@ -101,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 try {
-                    new ServerThread(socket).start();
+                    new ServerThread(socket,MainActivity.this).start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
